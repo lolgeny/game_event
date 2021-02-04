@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "game_event",
+  "version": "${version}",
+  "name": "Game event",
+  "description": "Adds a datapack interface to using the sculk sensor's game events",
+  "authors": [
+    "lolad"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/game_event/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.lolad.game_event.GameEventMod"
+    ]
+  },
+  "mixins": [
+    "game_event.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.1",
+    "fabric": "*",
+    "minecraft": "1.17-alpha.21.5.a"
+  }
+}
