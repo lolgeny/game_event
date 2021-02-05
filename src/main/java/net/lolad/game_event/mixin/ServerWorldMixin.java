@@ -5,7 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootContextType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -22,6 +22,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ServerWorldMixin {
     @Shadow
     abstract public MinecraftServer getServer();
+    private final static LootContextType EVENT_CONTEXT = new LootContextType.Builder()
+            .require(LootContextParameters.ORIGIN)
+            .allow(LootContextParameters.THIS_ENTITY)
+            .build();
     @Inject(method= "emitGameEvent(Lnet/minecraft/entity/Entity;Lnet/minecraft/world/event/GameEvent;Lnet/minecraft/util/math/BlockPos;)V",at=@At("TAIL"))
     private void emitGameEvent(Entity entity, GameEvent event, BlockPos pos, CallbackInfo ci) {
         ((MinecraftServerDuck)getServer()).getGameEventManager().game_events.forEach(
@@ -31,7 +35,7 @@ public abstract class ServerWorldMixin {
                             LootContext context = new LootContext.Builder((ServerWorld) (Object) this)
                                     .parameter(LootContextParameters.ORIGIN, Vec3d.of(pos))
                                     .optionalParameter(LootContextParameters.THIS_ENTITY, entity)
-                                    .build(LootContextTypes.SELECTOR);
+                                    .build(EVENT_CONTEXT);
                             if (!predicate.test(context)) {
                                 return;
                             }
