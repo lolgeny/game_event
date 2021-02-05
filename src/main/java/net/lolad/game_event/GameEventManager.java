@@ -1,9 +1,11 @@
 package net.lolad.game_event;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import net.minecraft.loot.LootGsons;
+import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.function.CommandFunction;
@@ -29,18 +31,15 @@ public class GameEventManager extends JsonDataLoader {
         loader.forEach(
             (id, json) -> {
                 try {
-//                    LocationCheckLootCondition predicate = null;
-//                    if (json.getAsJsonObject().has("predicate")) {
-//                        predicate = new LocationCheckLootCondition.Serializer().fromJson(
-//                                json.getAsJsonObject().get("predicate").getAsJsonObject(),
-//                                new JsonDeserializationContext() {
-//                                    @Override
-//                                    public <T> T deserialize(JsonElement json, Type typeOfT) throws JsonParseException {
-//                                        return null;
-//                                    }
-//                                }
-//                        );
-//                    }
+                    ImmutableSet.Builder<LootCondition> predicates = ImmutableSet.builder();
+                    if (json.getAsJsonObject().has("predicate")) {
+                        json.getAsJsonObject().get("predicate").getAsJsonArray().forEach(
+                                predicate -> predicates.add(GSON.fromJson(
+                                        predicate,
+                                        LootCondition.class
+                                ))
+                        );
+                    }
                     game_events.put(id, new GameEventFunction(
                             Registry.GAME_EVENT.get(
                                     Identifier.tryParse(
@@ -56,7 +55,8 @@ public class GameEventManager extends JsonDataLoader {
                                             .get("function")
                                             .getAsString()
                                     )
-                            )
+                            ),
+                            predicates.build()
                         )
                     );
                 } catch (Exception e) {
