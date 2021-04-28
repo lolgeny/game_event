@@ -1,3 +1,5 @@
+# NOTE: THIS HAS BEEN MERGED WITH FEMTOBLAZE AND NOW LIVES IN A LOVELY COTTAGE AT https://github.com/lolgeny/femtoblaze
+
 # Game event
 Simple mod for interfacing with game events in datapacks.
 # Usage
